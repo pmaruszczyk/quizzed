@@ -27,9 +27,14 @@
     function writeTableRow(user) {
         const x = document.createElement('tr');
         if (user.answered) {
-            x.className='table-success';
+            x.className = 'table-success';
         }
-        x.innerHTML = '<td>' + user.nick + '</td><td>' + user.points + '</td>';
+
+        let splitted = user.nick.split('_');
+        const number = splitted.slice(-1);
+        const nick = splitted.slice(0, -1).join('_');
+
+        x.innerHTML = '<td>' + nick + ' (uniqe: ' + number + ')</td><td>' + user.points + '</td>';
         return x;
     }
 

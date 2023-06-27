@@ -7,152 +7,164 @@ use Illuminate\Support\Facades\DB;
 
 class Question extends Controller
 {
-    const TIME_PER_QUESTION=10;
-    const POINTS_CORRECT=100;
+    private const TIME_PER_QUESTION = 30;
+    private const POINTS_CORRECT = 100;
 
     public function list(?int $index = null) : array
     {
+        //TODO Move to config file
         $questions = [
             [
-                'question' => 'Which TV series this picture is referring to?',
-                'image' => 'fun.png',
+                'question' => 'I was going to make myself a belt made out of watches, but then I realized it would be ....',
+                'image' => 'belt.jpg',
                 'answers' => [
-                    'A' => 'Bang Bang Theory',
-                    'B' => 'Big TechSoup Theory',
-                    'C' => 'Fun With Flags',
-                    'D' => 'Big Bang Theory',
+                    'A' => 'strange',
+                    'B' => 'too expensive',
+                    'C' => 'a waist of time',
+                    'D' => 'extravagant',
+                ],
+                'correct' => 'C',
+            ],
+            [
+                'question' => 'One windmill asks the other: What\'s your favorite kind of music?" The other says:',
+                'image' => 'wind.png',
+                'answers' => [
+                    'A' => 'Huh?',
+                    'B' => 'I have none:(',
+                    'C' => 'Disco Polo',
+                    'D' => 'I\'m a big metal fan',
                 ],
                 'correct' => 'D',
             ],
             [
-                'question' => 'What color is missing here?', //olympic flag
-                'image' => 'oly.png',
+                'question' => 'I wasn\'t originally going to get a brain transplant, but then...',
+                'image' => 'brain.jpg',
                 'answers' => [
-                    'A' => 'orange',
-                    'B' => 'purple',
-                    'C' => 'red',
-                    'D' => 'brown',
-                ],
-                'correct' => 'C',
-            ],
-            [
-                'question' => 'It is the flag of Japan. What the circle represents?',
-                'image' => 'jap.png',
-                'answers' => [
-                    'A' => 'sun',
-                    'B' => 'cherry',
-                    'C' => 'apple',
-                    'D' => 'moon',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'question' => 'Captain America seems to be "wearing" the flag from the picture. To which country it belongs?',
-                'image' => 'cap.png',
-                'answers' => [
-                    'A' => 'China',
-                    'B' => 'Myanmar',
-                    'C' => 'Puerto Rico',
-                    'D' => 'Spain',
-                ],
-                'correct' => 'C',
-            ],
-            [
-                'question' => 'What Philippines flag means when it\'s upside-down',
-                'image' => 'phi.png',
-                'answers' => [
-                    'A' => 'national holiday',
-                    'B' => 'state of war',
-                    'C' => 'nothing',
-                    'D' => 'pizza day',
+                    'A' => 'I faced it',
+                    'B' => 'I changed my mind',
+                    'C' => 'I loved it',
+                    'D' => 'I will not answer this question',
                 ],
                 'correct' => 'B',
             ],
             [
-                'question' => 'Ooops! Missing flag here... Choose A',
-                'image' => 'mis.png',
+                'question' => 'I suffer from kleptomania, but when it gets really bad...',
+                'image' => 'klep.png',
                 'answers' => [
-                    'A' => 'A',
-                    'B' => 'B',
-                    'C' => 'C',
-                    'D' => 'D',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'question' => 'Which color of Dominica\'s flag is used very rarely on other country flags?',
-                'image' => 'dom.png',
-                'answers' => [
-                    'A' => 'green',
-                    'B' => 'yellow',
-                    'C' => 'white',
-                    'D' => 'purple',
-                ],
-                'correct' => 'D',
-            ],
-            [
-                'question' => 'Wanna machine gun? Sure, it\s in flag of ...',
-                'image' => 'moz.png',
-                'answers' => [
-                    'A' => 'Vietnam',
-                    'B' => 'Mozambique',
-                    'C' => 'Armenia',
-                    'D' => 'Poland',
-                ],
-                'correct' => 'B',
-            ],
-            [
-                'question' => 'What is the pirates flag name?',
-                'image' => 'pir.png',
-                'answers' => [
-                    'A' => 'Holy Molly',
-                    'B' => 'Bald Man',
-                    'C' => 'Jolly Roger',
-                    'D' => 'Pretty Face',
+                    'A' => 'I phone my friend',
+                    'B' => 'I drink hot chocolate',
+                    'C' => 'I take something for it',
+                    'D' => 'I hug somebody',
                 ],
                 'correct' => 'C',
             ],
             [
-                'question' => 'What star constellation is presented on the left?',
-                'image' => 'aus.png',
+                'question' => 'What do you call cheese that isn’t yours?',
+                'image' => 'cheese.png',
                 'answers' => [
-                    'A' => 'Southern Cross',
-                    'B' => 'Aquarius',
-                    'C' => 'Phoenix',
-                    'D' => 'Canis Major',
+                    'A' => 'Cheezy!',
+                    'B' => 'Choosee!',
+                    'C' => 'Nacho cheese!',
+                    'D' => 'Gorgonzola!',
+                ],
+                'correct' => 'C',
+            ],
+            [
+                'question' => 'Why did the tomato blush?',
+                'image' => 'toma.png',
+                'answers' => [
+                    'A' => 'Because it saw the salad dressing',
+                    'B' => 'Because he wanted to',
+                    'C' => 'Just like that ',
+                    'D' => 'Not the correct answer',
                 ],
                 'correct' => 'A',
             ],
             [
-                'question' => 'To what country that flag belongs to?',
-                'image' => 'aus.png',
+                'question' => 'Why do French people eat snails?',
+                'image' => 'snail.png',
                 'answers' => [
-                    'A' => 'South Africa',
-                    'B' => 'Peru',
-                    'C' => 'New Zealand',
-                    'D' => 'Australia',
+                    'A' => 'Because it\'s cheap',
+                    'B' => 'Because it matches baguette',
+                    'C' => 'Why not?',
+                    'D' => 'Because they won\'t touch fast food',
                 ],
                 'correct' => 'D',
             ],
             [
-                'question' => 'Country Swaziland changed its name to ....',
-                'image' => 'sw.png',
+                'question' => 'I went to buy some camouflage trousers the other day but...',
+                'image' => 'camu.png',
                 'answers' => [
-                    'A' => 'Eswatini',
-                    'B' => 'Wichooti',
-                    'C' => 'Rwanda',
-                    'D' => 'John',
+                    'A' => 'They sold it out',
+                    'B' => 'I couldn\'t find any',
+                    'C' => 'They were not my size',
+                    'D' => 'I have lost shop address',
+                ],
+                'correct' => 'B',
+            ],
+            [
+                'question' => 'When life gives you melons....',
+                'image' => 'lemo.jpg',
+                'answers' => [
+                    'A' => 'you give it back',
+                    'B' => 'you do juice',
+                    'C' => 'you are dyslexic',
+                    'D' => 'you sell them',
+                ],
+                'correct' => 'C',
+            ],
+            [
+                'question' => 'My friend farted in an elevator, it was wrong',
+                'image' => 'elev.png',
+                'answers' => [
+                    'A' => 'on so many levels',
+                    'B' => 'because he was not alone',
+                    'C' => 'because there was no ventilation',
+                    'D' => 'oops!',
                 ],
                 'correct' => 'A',
             ],
             [
-                'question' => 'Three legs to represents three corners of island called...',
-                'image' => 'is.png',
+                'question' => 'Why was six nervous?',
+                'image' => 'sixx.png',
                 'answers' => [
-                    'A' => 'Greenland',
-                    'B' => 'Australia',
-                    'C' => 'Sicily',
-                    'D' => 'Malta',
+                    'A' => 'Because seven got lost',
+                    'B' => 'Because seven met zero',
+                    'C' => 'Because seven eight nine',
+                    'D' => 'Because seven cried',
+                ],
+                'correct' => 'C',
+            ],
+            [
+                'question' => 'What washes up on tiny beaches?',
+                'image' => 'wave.png',
+                'answers' => [
+                    'A' => 'Microwaves',
+                    'B' => 'Small waves',
+                    'C' => 'Small people',
+                    'D' => 'Microsoft',
+                ],
+                'correct' => 'A',
+            ],
+            [
+                'question' => 'What do you call a tiny mother?',
+                'image' => 'mini.png',
+                'answers' => [
+                    'A' => 'A mothee!',
+                    'B' => 'A mommy!',
+                    'C' => 'A mummy!',
+                    'D' => 'A minimum!',
+                ],
+                'correct' => 'D',
+            ],
+            [
+                'question' => 'Why are frogs so happy?',
+                'image' => 'frog.png',
+                'answers' => [
+                    'A' => 'They have no problems, bro!',
+                    'B' => 'They just are',
+                    'C' => 'They eat whatever bugs them',
+                    'D' => '¯\_(ツ)_/¯',
                 ],
                 'correct' => 'C',
             ],
@@ -177,7 +189,7 @@ class Question extends Controller
     {
         $index = $this->getCurrentQuestionIndex();
         $question = $this->list($index);
-        if ($index>0 && empty($question)) {
+        if ($index > 0 && empty($question)) {
             $question['id'] = '-1';
         } else {
             $question['id'] = $index;
@@ -190,49 +202,78 @@ class Question extends Controller
     public function getCurrent() : array
     {
         $question = $this->getCurrentFull();
+        $stats = [];
 
-        if (!$this->isAnswerRevealed()) {
+        if ($this->isAnswerRevealed()) {
+            $stats = $this->getCurrentQuestionStats();
+        }else {
             unset($question['correct']);
         }
 
-        return $question;
+        return [
+            'question' => $question,
+            'stats' => $stats,
+        ];
     }
 
-    private function isAnswerRevealed() {
-        $result = DB::select("select value FROM state WHERE id='SHOWANSWER'", []);
+    private function isAnswerRevealed()
+    {
+        $result = DB::select("SELECT value FROM state WHERE id = 'SHOWANSWER'");
         return (int) $result[0]->value;
     }
 
-    private function getCurrentQuestionIndex() {
-        $result = DB::select("select value FROM state WHERE id='STEP'", []);
+    private function getCurrentQuestionIndex()
+    {
+        $result = DB::select("SELECT value FROM state WHERE id = 'STEP'");
         return (int) $result[0]->value;
     }
 
-    private function getCurrentStartTime() {
-        $result = DB::select("select value FROM state WHERE id='STEPSTARTTIME'", []);
+    private function getCurrentStartTime()
+    {
+        $result = DB::select("SELECT value FROM state WHERE id = 'STEPSTARTTIME'");
         return (int) $result[0]->value;
     }
 
-    public function saveAnswer(Request $request) {
+    private function getCurrentQuestionStats()
+    {
+        $stats = [
+            'A' => 0,
+            'B' => 0,
+            'C' => 0,
+            'D' => 0,
+        ];
+
+        $statsPre = DB::select("
+            SELECT answer, COUNT(*) AS answer_count
+            FROM answers
+            WHERE question = (SELECT value FROM state WHERE id='STEP')
+            GROUP BY answer
+        ");
+
+        foreach ($statsPre as $statPre) {
+            $stats[$statPre->answer] = (int) $statPre->answer_count;
+        }
+
+        return $stats;
+    }
+
+    public function saveAnswer(Request $request)
+    {
         $answer = $request->input('answer');
         $index = $this->getCurrentQuestionIndex();
         $startTime = $this->getCurrentStartTime();
         $now = time();
 
-        $question = $this->getCurrentFull($index);
+        $question = $this->getCurrentFull();
 
         $points = 0;
 
         if ($question['correct'] === $answer && ($startTime+self::TIME_PER_QUESTION > $now)) {
             $points += self::POINTS_CORRECT;
-
-//            if (true) {
-                $points += 2 * ($startTime+self::TIME_PER_QUESTION-$now);
-//            }
-//            return var_export([$startTime+self::TIME_PER_QUESTION, $now], true);
+            $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
         }
 
-        DB::insert('insert into answers (nick, question, answer, points, time) values (?,?, ?, ?, ?)',
+        DB::insert('INSERT INTO answers (nick, question, answer, points, time) VALUES (?,?, ?, ?, ?)',
             [
                 $request->session()->get('nick'),
                 $index,

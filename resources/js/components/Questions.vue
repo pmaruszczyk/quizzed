@@ -30,19 +30,6 @@
 
     import Question from './Question.vue';
 
-    function prepareButtons(questionsNumber) {
-        const ids = document.getElementById('question_ids');
-
-        for( let i=0; i< questionsNumber; ++i) {
-            let el = document.createElement('div');
-            el.innerHTML = i+1;
-            el.id='q-' + i;
-
-            ids.appendChild(el);
-        }
-
-    }
-
     export default {
         components: {
             Question,
@@ -54,8 +41,6 @@
                     if (response.data) {
                         self.questions = response.data;
                         self.questionCount = self.questions.length -1;
-
-                        // prepareButtons(response.data.length);
                     }
                 })
                 .catch(function (error) {
@@ -67,9 +52,6 @@
                 questions: [],
                 currentQuestion: 0,
                 questionCount: 0,
-
-                // classname: '',
-                // id: ''
             }
         },
         methods: {

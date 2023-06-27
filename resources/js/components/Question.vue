@@ -35,6 +35,27 @@
                         <b-button @click="chooseAnswerD" :variant="variantD">{{ answer4 }}</b-button>
                     </div>
                 </div>
+                <div class="row">
+                    <b-container class="text-right w-50 mt-1"  :class="stats_class">
+                        <b-row>
+                            <b-col class="w-25">{{ answer1 }}</b-col>
+                            <b-col class="w-25"><b-progress :value="stats.A" :max="stats_maximum" :variant="variantA" show-value class="mb-3"></b-progress></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>{{ answer2 }}</b-col>
+                            <b-col><b-progress :value="stats.B" :max="stats_maximum" :variant="variantB" show-value class="mb-3"></b-progress></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>{{ answer3 }}</b-col>
+                            <b-col><b-progress :value="stats.C" :max="stats_maximum" :variant="variantC" show-value class="mb-3"></b-progress></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col>{{ answer4 }}</b-col>
+                            <b-col><b-progress :value="stats.D" :max="stats_maximum" :variant="variantD" show-value class="mb-3"></b-progress></b-col>
+                        </b-row>
+                    </b-container>
+
+                </div>
             </div>
         </div>
     </div>
@@ -68,16 +89,19 @@
                 welcome_text: 'Welcome in the quiz!',
                 welcome_class: '',
                 question_class: 'hidden',
-                title:'',
-                answer1:'',
-                answer2:'',
-                answer3:'',
-                answer4:'',
-                question_id:0,
-                variantA:'outline-dark',
-                variantB:'outline-dark',
-                variantC:'outline-dark',
-                variantD:'outline-dark',
+                title: '',
+                answer1: '',
+                answer2: '',
+                answer3: '',
+                answer4: '',
+                stats_maximum: 0,
+                stats_class: 'hidden',
+                stats: [],
+                question_id: 0,
+                variantA: 'outline-dark',
+                variantB: 'outline-dark',
+                variantC: 'outline-dark',
+                variantD: 'outline-dark',
                 new_points: '',
                 image_src: '',
                 question_active: true,
@@ -90,7 +114,6 @@
                 obj[property] = 'success';
             },
             markAsInvalid(obj, property) {
-                console.log(obj[property]);
                 if (obj[property] === 'warning' || obj[property] === 'danger') {
                     obj[property] = 'danger';
                 } else {
@@ -112,10 +135,6 @@
                 }
 
                 if (Q.correct) {
-                    // this.variantA='';
-                    // this.variantB='';
-                    // this.variantC='';
-                    // this.variantD='';
                     clearInterval(this.interval);
 
                     switch (Q.correct) {
@@ -159,12 +178,11 @@
                     }
                 }, 1000);
 
-
                 this.question_active = true;
-                this.variantA='outline-dark';
-                this.variantB='outline-dark';
-                this.variantC='outline-dark';
-                this.variantD='outline-dark';
+                this.variantA = 'outline-dark';
+                this.variantB = 'outline-dark';
+                this.variantC = 'outline-dark';
+                this.variantD = 'outline-dark';
                 this.welcome_class = 'hidden';
                 this.question_class = '';
                 this.title = Q.question;
@@ -172,16 +190,28 @@
                 this.answer2 = Q.answers.B;
                 this.answer3 = Q.answers.C;
                 this.answer4 = Q.answers.D;
-                this.image_src='/img/' + Q.image;
-                this.question_id=Q.id;
+                this.image_src = '/img/' + Q.image;
                 this.new_points ='';
+                this.question_id = Q.id;
+            },
+            populateStats(stats) {
+                if (Array.isArray(stats) && stats.length === 0) {
+                    this.stats_class = 'hidden';
+                    return;
+                }
+
+                this.stats_class = '';
+                this.stats = stats;
+                this.stats_maximum = Math.max(stats.A, stats.B, stats.C, stats.D);
             },
             getQuestion(question) {
                 let self = this;
                 axios.get('/question', {})
                     .then(function (response) {
-                        const question = response.data;
+                        const question = response.data.question;
+                        const stats = response.data.stats;
                         self.populateQuestion(question);
+                        self.populateStats(stats);
                     })
                     .catch(function (error) {
                         console.log(error);

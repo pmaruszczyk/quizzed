@@ -18,12 +18,11 @@ class SetNick extends Controller
 
     public function set(Request $request)
     {
-
-        $x = $request->input('nick') . '_' . mt_rand(90000,99999);
+        $x = $request->input('nick') . '_' . random_int(90000,99999);
         $request->session()->put('nick', $x);
 
-        DB::insert('insert into nick (nick) values (?)', [$x]);
-        $result = DB::select("select id from nick where nick =?", [$x]);
+        DB::insert('INSERT INTO nick (nick) VALUES (?)', [$x]);
+        $result = DB::select("SELECT id FROM nick WHERE nick =?", [$x]);
 
         return [
             'id' => $result[0]->id,

@@ -15,12 +15,11 @@ class User extends Controller
             return redirect('/');
         }
 
-        $result = DB::select("select id from nick where nick =?", [$nick]);
+        $result = DB::select("SELECT id FROM nick WHERE nick = ?", [$nick]);
 
         if (empty($result)) {
             $request->session()->put('nick',false);
             return redirect('/');
-
         }
 
         return view('question',[

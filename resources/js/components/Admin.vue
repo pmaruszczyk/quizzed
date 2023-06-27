@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         Hello, write your nick
-        <input type="text" maxlength="10" id="nickkk" :value="nick" @input="onInput" />
+        <input type="text" autofocus="autofocus" maxlength="10" id="nickkk" :value="nick" @input="onInput" />
         <input type="button" :class="classname" value="Submit" @click="setNick"/>
     </div>
 </template>

@@ -9,7 +9,6 @@ class Admin extends Controller
 {
     public function adminIndex(Request $request)
     {
-
         if (!$request->session()->get('admin', false)) {
             return redirect('/');
         }
@@ -19,28 +18,24 @@ class Admin extends Controller
 
     public function makeMeAdmin(Request $request)
     {
-
         $request->session()->put('admin', TRUE);
         return redirect('/admin');
-
     }
 
     public function users(Request $request)
     {
-        $results = DB::select("
-            select n.nick, IF(b.nick IS NULL, 0, 1) AS answered , IFNULL(SUM(a.points), 0) AS points from nick n
+        return DB::select("
+            SELECT n.nick, IF(b.nick IS NULL, 0, 1) AS answered , IFNULL(SUM(a.points), 0) AS points FROM nick n
             LEFT JOIN answers a
             ON n.nick=a.nick
             LEFT JOIN answers b
-            ON n.nick=b.nick AND (select value FROM state WHERE id='STEP') = b.question
+            ON n.nick=b.nick AND (SELECT value FROM state WHERE id='STEP') = b.question
 
             WHERE n.nick IS NOT NULL
             GROUP BY n.nick, a.nick, b.nick
             ORDER BY points DESC
-        ", []);
-        return $results;
+        ");
     }
-
 
     public function goToNextStep(Request $request)
     {
@@ -48,15 +43,16 @@ class Admin extends Controller
             return response('Sorry', 400);
         }
 
-        DB::update("Update state SET value=value+1 WHERE id='STEP'", []);
-        DB::update("Update state SET value=? WHERE id='STEPSTARTTIME'", [time()]);
-        DB::update("Update state SET value=? WHERE id='SHOWANSWER'", [0]);
+        DB::update("UPDATE state SET value=value+1 WHERE id='STEP'");
+        DB::update("UPDATE state SET value=? WHERE id='STEPSTARTTIME'", [time()]);
+        DB::update("UPDATE state SET value=? WHERE id='SHOWANSWER'", [0]);
 
         return $this->getCurrentQuestionIndex();
     }
 
-    private function getCurrentQuestionIndex() {
-        $result = DB::select("select value FROM state WHERE id='STEP'", []);
+    private function getCurrentQuestionIndex()
+    {
+        $result = DB::select("SELECT value FROM state WHERE id='STEP'", []);
         return (int) $result[0]->value;
     }
 
@@ -66,7 +62,7 @@ class Admin extends Controller
             return response('Sorry', 400);
         }
 
-        DB::update("Update state SET value=? WHERE id='SHOWANSWER'", [1]);
+        DB::update("UPDATE state SET value=? WHERE id='SHOWANSWER'", [1]);
 
         return true;
     }

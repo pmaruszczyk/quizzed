@@ -1,4 +1,4 @@
-
+Quiz is built using Laravel and Vue and bootstrap
 
 ## How to restart game:
 By calling SQL below:
@@ -8,4 +8,6 @@ TRUNCATE nick;
 UPDATE state SET VALUE =0 WHERE id='STEP';
 ```
 
-Quiz is build using Laravel and Vue and bootstrap
+## Rebuild Vue JavaScripts
+
+`npm prod build`

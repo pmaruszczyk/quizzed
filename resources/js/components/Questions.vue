@@ -16,7 +16,7 @@
 
         <b-button @click="nextQuestion" variant="outline-info">Next question</b-button>
 
-        <question class="border border-dark" />
+        <player-screen class="border border-dark" />
         <br>
         <b-button @click="showAnswer" variant="outline-danger">Reveal answer</b-button>
     </div>
@@ -28,11 +28,11 @@
 <script>
     import axios from 'axios';
 
-    import Question from './Question.vue';
+    import PlayerScreen from './PlayerScreen.vue';
 
     export default {
         components: {
-            Question,
+            PlayerScreen,
         },
         mounted() {
             let self = this;

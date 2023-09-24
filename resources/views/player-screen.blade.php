@@ -23,7 +23,7 @@
     </head>
     <body class="antialiased">
     <div id="app" >
-        <question />
+        <player-screen />
     </div>
         <script src="{{ mix('/js/app.js') }}"></script>
     </body>

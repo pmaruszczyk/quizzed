@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+//TODO This class probably should be renamed to something like PlayerScreen
 class Question extends Controller
 {
-    private const TIME_PER_QUESTION = 30;
-    private const POINTS_CORRECT = 100;
+    private const TIME_PER_QUESTION = 60;
+    private const POINTS_CORRECT = 200;
 
     public function list(?int $index = null) : array
     {
         //TODO Move to config file
         $questions = [
             [
+                'type' => 'abcd',
                 'question' => 'I was going to make myself a belt made out of watches, but then I realized it would be ....',
                 'image' => 'belt.jpg',
                 'answers' => [
@@ -26,39 +28,37 @@ class Question extends Controller
                 'correct' => 'C',
             ],
             [
-                'question' => 'One windmill asks the other: What\'s your favorite kind of music?" The other says:',
-                'image' => 'wind.png',
-                'answers' => [
-                    'A' => 'Huh?',
-                    'B' => 'I have none:(',
-                    'C' => 'Disco Polo',
-                    'D' => 'I\'m a big metal fan',
-                ],
-                'correct' => 'D',
+                'type' => 'point',
+                'question' => 'Find the x',
+                'image' => 'file.webp',
+                'image_width' => 1196,
+                'image_height' => 700,
+                'correct_width' => 257,
+                'correct_height' => 152,
+                'correct_radius' => 145,
             ],
             [
-                'question' => 'I wasn\'t originally going to get a brain transplant, but then...',
-                'image' => 'brain.jpg',
-                'answers' => [
-                    'A' => 'I faced it',
-                    'B' => 'I changed my mind',
-                    'C' => 'I loved it',
-                    'D' => 'I will not answer this question',
-                ],
-                'correct' => 'B',
+                'type' => 'point',
+                'question' => 'Find the YYYYY',
+                'image' => 'file.webp',
+                'image_width' => 1196,
+                'image_height' => 700,
+                'correct_width' => 257,
+                'correct_height' => 152,
+                'correct_radius' => 145,
             ],
             [
-                'question' => 'I suffer from kleptomania, but when it gets really bad...',
-                'image' => 'klep.png',
-                'answers' => [
-                    'A' => 'I phone my friend',
-                    'B' => 'I drink hot chocolate',
-                    'C' => 'I take something for it',
-                    'D' => 'I hug somebody',
-                ],
-                'correct' => 'C',
+                'type' => 'point',
+                'question' => 'Find the UUUUU',
+                'image' => 'file.webp',
+                'image_width' => 1196,
+                'image_height' => 700,
+                'correct_width' => 257,
+                'correct_height' => 152,
+                'correct_radius' => 145,
             ],
             [
+                'type' => 'abcd',
                 'question' => 'What do you call cheese that isn’t yours?',
                 'image' => 'cheese.png',
                 'answers' => [
@@ -69,105 +69,6 @@ class Question extends Controller
                 ],
                 'correct' => 'C',
             ],
-            [
-                'question' => 'Why did the tomato blush?',
-                'image' => 'toma.png',
-                'answers' => [
-                    'A' => 'Because it saw the salad dressing',
-                    'B' => 'Because he wanted to',
-                    'C' => 'Just like that ',
-                    'D' => 'Not the correct answer',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'question' => 'Why do French people eat snails?',
-                'image' => 'snail.png',
-                'answers' => [
-                    'A' => 'Because it\'s cheap',
-                    'B' => 'Because it matches baguette',
-                    'C' => 'Why not?',
-                    'D' => 'Because they won\'t touch fast food',
-                ],
-                'correct' => 'D',
-            ],
-            [
-                'question' => 'I went to buy some camouflage trousers the other day but...',
-                'image' => 'camu.png',
-                'answers' => [
-                    'A' => 'They sold it out',
-                    'B' => 'I couldn\'t find any',
-                    'C' => 'They were not my size',
-                    'D' => 'I have lost shop address',
-                ],
-                'correct' => 'B',
-            ],
-            [
-                'question' => 'When life gives you melons....',
-                'image' => 'lemo.jpg',
-                'answers' => [
-                    'A' => 'you give it back',
-                    'B' => 'you do juice',
-                    'C' => 'you are dyslexic',
-                    'D' => 'you sell them',
-                ],
-                'correct' => 'C',
-            ],
-            [
-                'question' => 'My friend farted in an elevator, it was wrong',
-                'image' => 'elev.png',
-                'answers' => [
-                    'A' => 'on so many levels',
-                    'B' => 'because he was not alone',
-                    'C' => 'because there was no ventilation',
-                    'D' => 'oops!',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'question' => 'Why was six nervous?',
-                'image' => 'sixx.png',
-                'answers' => [
-                    'A' => 'Because seven got lost',
-                    'B' => 'Because seven met zero',
-                    'C' => 'Because seven eight nine',
-                    'D' => 'Because seven cried',
-                ],
-                'correct' => 'C',
-            ],
-            [
-                'question' => 'What washes up on tiny beaches?',
-                'image' => 'wave.png',
-                'answers' => [
-                    'A' => 'Microwaves',
-                    'B' => 'Small waves',
-                    'C' => 'Small people',
-                    'D' => 'Microsoft',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'question' => 'What do you call a tiny mother?',
-                'image' => 'mini.png',
-                'answers' => [
-                    'A' => 'A mothee!',
-                    'B' => 'A mommy!',
-                    'C' => 'A mummy!',
-                    'D' => 'A minimum!',
-                ],
-                'correct' => 'D',
-            ],
-            [
-                'question' => 'Why are frogs so happy?',
-                'image' => 'frog.png',
-                'answers' => [
-                    'A' => 'They have no problems, bro!',
-                    'B' => 'They just are',
-                    'C' => 'They eat whatever bugs them',
-                    'D' => '¯\_(ツ)_/¯',
-                ],
-                'correct' => 'C',
-            ],
         ];
 
         $questions = array_merge([[]], $questions);
@@ -175,8 +76,7 @@ class Question extends Controller
         if ($index!== null) {
             if (isset($questions[$index])) {
                 return $questions[$index];
-            }
-            else {
+            } else {
                 return [];
             }
         }
@@ -185,29 +85,38 @@ class Question extends Controller
 
     }
 
-    private function getCurrentFull() : array
+    private function getCurrentFull(?Request $request) : array
     {
         $index = $this->getCurrentQuestionIndex();
         $question = $this->list($index);
         if ($index > 0 && empty($question)) {
-            $question['id'] = '-1';
+            $question['id'] = '-1'; // TODO magic value
         } else {
             $question['id'] = $index;
         }
         $question['time_per_question'] = self::TIME_PER_QUESTION;
 
+        if ($request) {
+            $question['nick'] = $request->session()->get('nick');
+        }
+
         return $question;
     }
 
-    public function getCurrent() : array
+    public function getCurrent(Request $request) : array
     {
-        $question = $this->getCurrentFull();
+        $question = $this->getCurrentFull($request);
         $stats = [];
 
         if ($this->isAnswerRevealed()) {
-            $stats = $this->getCurrentQuestionStats();
-        }else {
+            if ($question['type'] !== 'point') {
+                $stats = $this->getCurrentQuestionStats();
+            }
+        } else {
             unset($question['correct']);
+            unset($question['correct_width']);
+            unset($question['correct_height']);
+            unset($question['correct_radius']);
         }
 
         return [
@@ -259,30 +168,91 @@ class Question extends Controller
 
     public function saveAnswer(Request $request)
     {
-        $answer = $request->input('answer');
-        $index = $this->getCurrentQuestionIndex();
+        $question = $this->getCurrentFull($request);
         $startTime = $this->getCurrentStartTime();
         $now = time();
-
-        $question = $this->getCurrentFull();
-
+        $type = $request->input('type');
         $points = 0;
+        $answer = '';
 
-        if ($question['correct'] === $answer && ($startTime+self::TIME_PER_QUESTION > $now)) {
-            $points += self::POINTS_CORRECT;
-            $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
+        if (($startTime + self::TIME_PER_QUESTION > $now)) {
+            switch ($type) {
+                case 'abcd':
+                    $answer = $request->input('letter');
+                    $points = $this->getAbcdPoints($request->input('letter'), $question);
+                    break;
+                case 'point':
+                    $points = $this->getPointPoints(
+                        (int) $request->input('image-width'),
+                        (int) $request->input('image-height'),
+                        (int) $request->input('click-x'),
+                        (int) $request->input('click-y'),
+                        $question
+                    );
+
+                    break;
+                default:
+                    return 0;
+            }
+
+            if ($points > 0) {
+                // Add bonus for quick answer
+                $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
+            }
         }
+
+        $index = $this->getCurrentQuestionIndex();
 
         DB::insert('INSERT INTO answers (nick, question, answer, points, time) VALUES (?,?, ?, ?, ?)',
             [
                 $request->session()->get('nick'),
                 $index,
                 $answer,
-                $points,
+                max(0, $points),
                 $now
             ]);
 
         return $points;
     }
 
+    private function getAbcdPoints(string $letter, array $question): int
+    {
+        $points = 0;
+        if ($question['correct'] === $letter) {
+            $points += self::POINTS_CORRECT;
+        }
+
+        return $points;
+    }
+
+    private function getPointPoints(int $clientImageWidth, int $clientImageHeight, int $clickX, int $clickY, array $question): int
+    {
+        $points = 0;
+
+        $answerX = $this->convertClientDimensionToOriginal($question['image_width'], $clientImageWidth, $clickX);
+        $answerY = $this->convertClientDimensionToOriginal($question['image_height'], $clientImageHeight, $clickY);
+
+        $distanceFromCenter = floor($this->countDistance($question['correct_width'], $question['correct_height'], $answerX, $answerY));
+
+        if ($distanceFromCenter <= ceil($question['correct_radius'])) {
+            $points += self::POINTS_CORRECT;
+        }
+
+        return $points;
+    }
+
+    private function convertClientDimensionToOriginal(int $maxOriginal, int $maxClient, int $clientValue): int
+    {
+        if ($maxClient === 0) {
+            return 0;
+        }
+
+        return (int) (($clientValue * $maxOriginal)/$maxClient);
+    }
+
+    private function countDistance(int $x1, int $y1, int $x2, int $y2) {
+        $a = $x1 - $x2;
+        $b = $y1 - $y2;
+        return sqrt($a*$a + $b*$b);
+    }
 }

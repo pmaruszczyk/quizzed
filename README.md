@@ -14,7 +14,7 @@ UPDATE state SET VALUE =0 WHERE id='STEP';
 
 ## Rebuild Vue JavaScripts
 
-`npm prod build`
+`npm run prod`
 
 ## How to prepare questions and images
 

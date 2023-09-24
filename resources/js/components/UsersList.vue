@@ -34,7 +34,7 @@
         const number = splitted.slice(-1);
         const nick = splitted.slice(0, -1).join('_');
 
-        x.innerHTML = '<td>' + nick + ' (uniqe: ' + number + ')</td><td>' + user.points + '</td>';
+        x.innerHTML = '<td>' + nick + ' (unique: ' + number + ')</td><td>' + user.points + '</td>';
         return x;
     }
 

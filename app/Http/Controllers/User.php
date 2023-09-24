@@ -22,7 +22,7 @@ class User extends Controller
             return redirect('/');
         }
 
-        return view('question',[
+        return view('player-screen', [
             'id' => $result[0]->id,
             'nickFromServer' => $nick,
         ]);

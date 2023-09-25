@@ -11,8 +11,11 @@
         </div>
         <div :class="question_class">
             <b-row class="player-header">
-                <b-col size="12">
-                    {{ nick }} <!-- TODO {{ points }} points,--> last gained: {{ new_points }}
+                <b-col size="6">
+                    {{ nick }}
+                </b-col>
+                <b-col size="6">
+                    <!-- TODO {{ points }} points,--> last gained: {{ new_points }}
                 </b-col>
             </b-row>
             <div class="container text-center">
@@ -28,6 +31,7 @@
                             <img :class="class_image" :src="image_src" @click="pointOnImage" />
                             <div class="mark mark-user hidden"></div>
                             <div class="mark mark-correct hidden"></div>
+                            <div class="mark mark-other-player hidden"></div>
                         </div>
                     </div>
                 </div>
@@ -101,6 +105,13 @@
     .point .image .mark-correct {
         border: 2px solid green;
     }
+    .point .image .mark-other-player {
+        border: 2px solid #ffb700;
+        background: #ffb700;
+    }
+    .point .image>.mark.mark-other-player.hidden {
+        display: none;
+    }
     .player-header {
         background: #101042;
         color: white;
@@ -129,6 +140,7 @@
                 nick: '',
                 points: 0,
                 new_points: '',
+                new_points_temporary_store: '',
                 answer1: '',
                 answer2: '',
                 answer3: '',
@@ -148,7 +160,7 @@
             }
         },
         methods: {
-            populateQuestion(question) {
+            populateQuestion(question, playersPoints) {
                 if (question.id == '-1') { //TODO  magic value - not descriptive
                     clearInterval(loopId); //TODO function called -> stop asking server
                     clearInterval(this.interval);//TODO function called ->  stop progressbar
@@ -164,10 +176,11 @@
 
                 switch (question.type) {
                     case 'abcd': this.populateAbcdQuestion(question); break;
-                    case 'point': this.populatePointQuestion(question); break;
+                    case 'point': this.populatePointQuestion(question, playersPoints); break;
                 }
 
-                if (question.correct) {
+                if (question.revealed) {
+                    this.showGainedPoints();
                     clearInterval(this.interval);
                 }
 
@@ -190,7 +203,7 @@
                 }, 1000);
 
 
-                //TODO this.resetQuestion
+                //TODO \/ this.initQuestion; General function
                 this.question_active = true;
                 this.welcome_class = 'hidden';
                 this.question_class = question.type;
@@ -199,8 +212,10 @@
                 this.title = question.question;
                 this.image_src = '/img/' + question.image;
                 this.new_points = '';
+                this.new_points_temporary_store = '';
                 this.question_id = question.id;
                 this.nick = question.nick;
+                this.clearPointQuestionElements();
 
                 switch (question.type) {
                     case 'abcd': this.initAbcdQuestion(question); break;
@@ -254,13 +269,20 @@
                     }
                 }
             },
-            populatePointQuestion(question) {
-                if (question.correct_width) {
-                    const image = document.querySelector('.image img');
-                    const left = parseInt((question.correct_width * image.width)/question.image_width);
-                    const top = parseInt((question.correct_height * image.height)/question.image_height);
+            populatePointQuestion(question, playersPoints) {
+                const imageLoaded = document.querySelector('.image img').width > 0;
+                if (question.correct_width && imageLoaded) {
+                    // const image = document.querySelector('.image img');
+                    // const left = parseInt((question.correct_width * image.width)/question.image_width);
+                    // const top = parseInt((question.correct_height * image.height)/question.image_height);
+                    const left = this.convertToImageWidth(question.correct_width, question);
+                    const top = this.convertToImageHeight(question.correct_height, question);
 
                     this.putMarkOnImage(left, top, 'mark-correct');
+
+                    if (document.querySelectorAll('.mark-other-player:not(.hidden)').length != playersPoints.length) {
+                        playersPoints.forEach(point => this.putOtherPlayerMark(point,question));
+                    }
                 }
             },
             populateStats(stats) {
@@ -279,7 +301,8 @@
                     .then(function (response) {
                         const question = response.data.question;
                         const stats = response.data.stats;
-                        self.populateQuestion(question);
+                        const playersPoints = response.data.playersPoints;
+                        self.populateQuestion(question, playersPoints);
                         self.populateStats(stats);
                     })
                     .catch(function (error) {
@@ -340,7 +363,7 @@
                 axios.post('/saveAnswer', answer)
                     .then(function (response) {
                         self.question_active = false;
-                        self.new_points = '+' + response.data;
+                        self.new_points_temporary_store = response.data;
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -356,6 +379,24 @@
                 mark.style.width = `${width}px`;
                 mark.style.height = `${height}px`;
             },
+            putOtherPlayerMark(point, question) {
+                const templateMark = document.querySelector('.image .mark-other-player.hidden');
+                const mark = templateMark.cloneNode();
+                const left = this.convertToImageWidth(point[0], question);
+                const top = this.convertToImageWidth(point[1], question);
+                const width = 4;
+                const height = width;
+                mark.className = 'mark mark-other-player';
+                mark.style.top = `${top - height/2}px`;
+                mark.style.left =`${left - width/2}px`;
+                mark.style.width = `${width}px`;
+                mark.style.height = `${height}px`;
+                templateMark.after(mark);
+            },
+            clearPointQuestionElements() {
+                const marks = document.querySelectorAll('.image .mark-other-player:not(.hidden)');
+                marks.forEach(mark => mark.remove());
+            },
             markAbcdAsValid(obj, property) {
                 obj[property] = 'success';
             },
@@ -365,6 +406,17 @@
                 } else {
                     obj[property] = '';
                 }
+            },
+            showGainedPoints() {
+                this.new_points = '+' + this.new_points_temporary_store;
+            },
+            convertToImageWidth(x, question) {
+                const image = document.querySelector('.image img');
+                return (x * image.width) / question.image_width;
+            },
+            convertToImageHeight(y, question) {
+                const image = document.querySelector('.image img');
+                return (y * image.height) / question.image_height;
             },
         }
     }

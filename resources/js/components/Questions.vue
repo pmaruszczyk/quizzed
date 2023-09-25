@@ -19,11 +19,18 @@
         <player-screen class="border border-dark" />
         <br>
         <b-button @click="showAnswer" variant="outline-danger">Reveal answer</b-button>
+        <br><br>
+        <b-row>
+            <b-col cols="3">
+                <b-button @click="resetGame" variant="outline-secondary" size="sm">Reset game</b-button>
+            </b-col>
+            <b-col cols="9"/>
+        </b-row>
     </div>
 
 </template>
 <style>
-
+    .questions .player-header {display: none;}
 </style>
 <script>
     import axios from 'axios';
@@ -70,6 +77,10 @@
 
             showAnswer() {
                 axios.get('/showAnswer');
+            },
+            resetGame() {
+                //TODO Prompt
+                axios.get('/resetGame'); //TODO endpoint
             }
         }
 

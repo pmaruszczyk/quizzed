@@ -106,11 +106,20 @@ class Question extends Controller
     public function getCurrent(Request $request) : array
     {
         $question = $this->getCurrentFull($request);
+        $question['revealed'] = false;
         $stats = [];
+        $playersPoints = [];
+        $nick = $request->session()->get('nick');
 
         if ($this->isAnswerRevealed()) {
-            if ($question['type'] !== 'point') {
-                $stats = $this->getCurrentQuestionStats();
+            if (isset($question['type'])) {
+                $question['revealed'] = true;
+
+                if ($question['type'] === 'point'){
+                    $playersPoints = $this->getCurrentQuestionChosenPoints($nick);
+                } else {
+                    $stats = $this->getCurrentQuestionStats();
+                }
             }
         } else {
             unset($question['correct']);
@@ -122,6 +131,7 @@ class Question extends Controller
         return [
             'question' => $question,
             'stats' => $stats,
+            'playersPoints' => $playersPoints,
         ];
     }
 
@@ -141,6 +151,29 @@ class Question extends Controller
     {
         $result = DB::select("SELECT value FROM state WHERE id = 'STEPSTARTTIME'");
         return (int) $result[0]->value;
+    }
+
+    private function getCurrentQuestionChosenPoints($nick)
+    {
+        $points = [];
+        $chosenPoints = DB::select("
+            SELECT answer
+            FROM answers
+            WHERE question = (SELECT value FROM state WHERE id='STEP')
+            AND nick != '?'
+        ", [$nick]);
+
+        //TODO ^ removing own result not working
+
+        foreach ($chosenPoints as $chosenPoint) {
+            $pair = explode(',', $chosenPoint->answer);
+            $points[] = [
+                (int) $pair[0],
+                (int) $pair[1],
+            ];
+        }
+
+        return $points;
     }
 
     private function getCurrentQuestionStats()
@@ -189,6 +222,15 @@ class Question extends Controller
                         (int) $request->input('click-y'),
                         $question
                     );
+
+                    $answer = $this->getPointAnswer(
+                        (int) $request->input('image-width'),
+                        (int) $request->input('image-height'),
+                        (int) $request->input('click-x'),
+                        (int) $request->input('click-y'),
+                        $question
+                    );
+                    $answer = implode(',', $answer);
 
                     break;
                 default:
@@ -239,6 +281,14 @@ class Question extends Controller
         }
 
         return $points;
+    }
+
+    private function getPointAnswer(int $clientImageWidth, int $clientImageHeight, int $clickX, int $clickY, array $question): array
+    {
+        $answerX = $this->convertClientDimensionToOriginal($question['image_width'], $clientImageWidth, $clickX);
+        $answerY = $this->convertClientDimensionToOriginal($question['image_height'], $clientImageHeight, $clickY);
+
+        return [$answerX, $answerY];
     }
 
     private function convertClientDimensionToOriginal(int $maxOriginal, int $maxClient, int $clientValue): int

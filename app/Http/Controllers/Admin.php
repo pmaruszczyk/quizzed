@@ -67,4 +67,16 @@ class Admin extends Controller
         return true;
     }
 
+    public function resetGame(Request $request)
+    {
+        if (!$request->session()->get('admin', false)) {
+            return response('Sorry', 400);
+        }
+
+        DB::update("TRUNCATE answers;");
+        DB::update("TRUNCATE nick;");
+        DB::update("UPDATE state SET VALUE = 0 WHERE id = 'STEP';");
+
+        return true;
+    }
 }

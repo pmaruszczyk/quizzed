@@ -79,8 +79,9 @@
                 axios.get('/showAnswer');
             },
             resetGame() {
-                //TODO Prompt
-                axios.get('/resetGame'); //TODO endpoint
+                if (window.confirm('Users will be removed. Quiz will be reset. Do you want to do it?')) {
+                    axios.post('/resetGame').then(response => location.href = location.href);
+                }
             }
         }
 

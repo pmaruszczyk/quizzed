@@ -18,7 +18,7 @@ class User extends Controller
         $result = DB::select("SELECT id FROM nick WHERE nick = ?", [$nick]);
 
         if (empty($result)) {
-            $request->session()->put('nick',false);
+            $request->session()->put('nick', false);
             return redirect('/');
         }
 

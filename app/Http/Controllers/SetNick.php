@@ -18,6 +18,10 @@ class SetNick extends Controller
 
     public function set(Request $request)
     {
+        if (empty($request->input('nick'))) {
+            throw new \Exception();
+        }
+
         $x = $request->input('nick') . '_' . random_int(90000,99999);
         $request->session()->put('nick', $x);
 

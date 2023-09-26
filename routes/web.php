@@ -20,6 +20,7 @@ Route::get('/user/{nick}', [\App\Http\Controllers\User::class, 'index']);
 Route::get('/admin',        [\App\Http\Controllers\Admin::class, 'adminIndex']);
 Route::get('/goToNextStep', [\App\Http\Controllers\Admin::class, 'goToNextStep']);
 Route::get('/showAnswer',   [\App\Http\Controllers\Admin::class, 'showAnswer']);
+Route::post('/resetGame', [\App\Http\Controllers\Admin::class, 'resetGame']);
 Route::get('/makeMeAdmin123', [\App\Http\Controllers\Admin::class, 'makeMeAdmin']);
 Route::get('/users', [\App\Http\Controllers\Admin::class, 'users']);
 Route::get('/questions567', [\App\Http\Controllers\Question::class, 'list']);

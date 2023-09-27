@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/',        [\App\Http\Controllers\SetNick::class, 'index']);
 Route::post('/setNick', [\App\Http\Controllers\SetNick::class, 'set']);
-Route::get('/user/{nick}', [\App\Http\Controllers\User::class, 'index']);
+Route::get('/user', [\App\Http\Controllers\User::class, 'index']);
 Route::get('/admin',        [\App\Http\Controllers\Admin::class, 'adminIndex']);
 Route::get('/goToNextStep', [\App\Http\Controllers\Admin::class, 'goToNextStep']);
 Route::get('/showAnswer',   [\App\Http\Controllers\Admin::class, 'showAnswer']);

@@ -408,7 +408,7 @@
                 }
             },
             showGainedPoints() {
-                this.new_points = '+' + this.new_points_temporary_store;
+                this.new_points = '+' + (this.new_points_temporary_store || 0);
             },
             convertToImageWidth(x, question) {
                 const image = document.querySelector('.image img');

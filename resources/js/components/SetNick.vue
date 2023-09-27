@@ -2,12 +2,12 @@
     <div class="container">
         <b-row>
             <b-col size="12">
-                <h1>Welcome in the Quizzed, write your nick below</h1>
+                <h1>Welcome to the Quizzed, write your nick below</h1>
             </b-col>
         </b-row>
         <b-row>
             <b-col size="12">
-                <input type="text" class="form-control text-center" autofocus="autofocus" maxlength="10" id="nickkk" :value="nick" @input="onInput" />
+                <input type="text" class="form-control text-center" autofocus="autofocus" maxlength="12" id="nickkk" :value="nick" @input="onInput" />
             </b-col>
         </b-row>
         <b-row style="padding-top: 30px;">
@@ -51,10 +51,10 @@
                 .then(function (response) {
                     if (response.data.nickFromServer) {
 
-                        location.href='user/' + response.data.nickFromServer;
+                        location.href = 'user'; ///' + encodeURIComponent(response.data.nickFromServer);
                         // self.nick = response.data.nickFromServer ;
                         // self.id = response.data.id;
-                        self.classname= 'hidden';
+                        self.classname = 'hidden';
                     }
                 })
                 .catch(function (error) {

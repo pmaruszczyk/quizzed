@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class User extends Controller
 {
-    public function index(string $nick, Request $request)
+    public function index(Request $request)
     {
-        $nickFromSession = $request->session()->get('nick');
+        $nick = $request->session()->get('nick');
 
-        if ($nick !== $nickFromSession) {
+        if (empty($nick)) {
             return redirect('/');
         }
 

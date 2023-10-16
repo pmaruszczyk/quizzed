@@ -130,7 +130,7 @@
         },
         data() {
             return {
-                welcome_text: 'Welcome in the quiz! Waiting for players.',
+                welcome_text: 'Welcome to the quiz! Waiting for players.',
                 welcome_class: '',
                 question_class: 'hidden',
                 class_answers_abcd: 'hidden',

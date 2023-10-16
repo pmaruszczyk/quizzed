@@ -5,13 +5,18 @@
                 <questions />
             </b-col>
             <b-col size="6">
-            <h3>Number of players: {{ number_of_players }}</h3>
+            <h3>{{ number_of_players }} players</h3>
             <table class="table">
-                <tr>
-                    <th>Nick</th>
-                    <th>Points</th>
-                </tr>
-                <tbody id="tbody1"></tbody>
+                <tbody id="tbody1">
+                    <tr>
+                        <th>Nick</th>
+                        <th>Points</th>
+                    </tr>
+                    <tr v-for="user in users" :class="user.answered ? 'table-success' : ''">
+                        <td v-b-tooltip.hover :title="user.unique">{{user.nick}}</td>
+                        <td>{{user.points}}</td>
+                    </tr>
+                </tbody>
             </table>
             </b-col>
         </b-row>
@@ -24,33 +29,31 @@
     import axios from 'axios';
     import Questions from './Questions.vue';
 
-    function writeTableRow(user) {
-        const x = document.createElement('tr');
-        if (user.answered) {
-            x.className = 'table-success';
+    function preprocess(user) {
+        const split = user.nick.split('_');
+        const number = split.slice(-1).join('');
+        const nick = split.slice(0, -1).join('_');
+
+        return {
+            nick: nick,
+            unique: number,
+            points: user.points,
+            answered: user.answered,
         }
-
-        let splitted = user.nick.split('_');
-        const number = splitted.slice(-1);
-        const nick = splitted.slice(0, -1).join('_');
-
-        x.innerHTML = '<td>' + nick + ' (unique: ' + number + ')</td><td>' + user.points + '</td>';
-        return x;
     }
 
-    function writeTable(users) {
-        const x = document.getElementById('tbody1');
-        x.innerHTML='';
-        users.forEach((value) => {
-            x.appendChild(writeTableRow(value));
-        })
+    function preprocessUsers(users) {
+        users.forEach((user, index) => {
+            users[index] = preprocess(user);
+        });
+        return users;
     }
 
     export default {
         data() {
             return {
-                // users_results: [],
-                number_of_players: 0
+                users: [],
+                number_of_players: 0,
             }
         },
         components: {
@@ -58,21 +61,20 @@
         },
         mounted() {
             const self = this;
-            function x() {
+            function refreshUsersList() {
                 axios.get('/users', {
                     nick: this.nick
                 })
                 .then(function (response) {
-                    writeTable(response.data);
-                    self.users_results = response.data;
-                    self.number_of_players = self.users_results.length;
+                    self.users = preprocessUsers(response.data);
+                    self.number_of_players = self.users.length;
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
             }
 
-            setInterval(x, 2000)
+            setInterval(refreshUsersList, 2000)
         },
     }
 </script>

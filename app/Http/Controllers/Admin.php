@@ -52,7 +52,7 @@ class Admin extends Controller
 
     private function getCurrentQuestionIndex()
     {
-        $result = DB::select("SELECT value FROM state WHERE id='STEP'", []);
+        $result = DB::select("SELECT value FROM state WHERE id = 'STEP'", []);
         return (int) $result[0]->value;
     }
 
@@ -62,7 +62,7 @@ class Admin extends Controller
             return response('Sorry', 400);
         }
 
-        DB::update("UPDATE state SET value=? WHERE id='SHOWANSWER'", [1]);
+        DB::update("UPDATE state SET value = ? WHERE id = 'SHOWANSWER'", [1]);
 
         return true;
     }

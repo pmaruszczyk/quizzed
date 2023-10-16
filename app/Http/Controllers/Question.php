@@ -201,7 +201,7 @@ class Question extends Controller
         $chosenPoints = DB::select("
             SELECT answer
             FROM answers
-            WHERE question = (SELECT value FROM state WHERE id='STEP')
+            WHERE question = (SELECT value FROM state WHERE id = 'STEP')
             AND nick != '?'
         ", [$nick]);
 
@@ -250,39 +250,43 @@ class Question extends Controller
         $points = 0;
         $answer = '';
 
-        if (($startTime + self::TIME_PER_QUESTION > $now)) {
-            switch ($type) {
-                case 'abcd':
-                    $answer = $request->input('letter');
+        $gameIsInProgress = ($startTime + self::TIME_PER_QUESTION) > $now;
+
+        switch ($type) {
+            case 'abcd':
+                $answer = $request->input('letter');
+                if ($gameIsInProgress) {
                     $points = $this->getAbcdPoints($request->input('letter'), $question);
-                    break;
-                case 'point':
+                }
+                break;
+            case 'point':
+                $answer = $this->getPointAnswer(
+                    (int) $request->input('image-width'),
+                    (int) $request->input('image-height'),
+                    (int) $request->input('click-x'),
+                    (int) $request->input('click-y'),
+                    $question
+                );
+                $answer = implode(',', $answer);
+
+                if ($gameIsInProgress) {
                     $points = $this->getPointPoints(
-                        (int) $request->input('image-width'),
-                        (int) $request->input('image-height'),
-                        (int) $request->input('click-x'),
-                        (int) $request->input('click-y'),
+                        (int)$request->input('image-width'),
+                        (int)$request->input('image-height'),
+                        (int)$request->input('click-x'),
+                        (int)$request->input('click-y'),
                         $question
                     );
+                }
 
-                    $answer = $this->getPointAnswer(
-                        (int) $request->input('image-width'),
-                        (int) $request->input('image-height'),
-                        (int) $request->input('click-x'),
-                        (int) $request->input('click-y'),
-                        $question
-                    );
-                    $answer = implode(',', $answer);
+                break;
+            default:
+                return 0;
+        }
 
-                    break;
-                default:
-                    return 0;
-            }
-
-            if ($points > 0) {
-                // Add bonus for quick answer
-                $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
-            }
+        if ($points > 0) {
+            // Add bonus for quick answer
+            $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
         }
 
         $index = $this->getCurrentQuestionIndex();

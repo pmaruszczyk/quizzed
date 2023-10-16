@@ -1,30 +1,30 @@
 <template>
     <div class="questions">
-        <h3>Current question</h3>
-
-        <b-pagination
-            v-model="currentQuestion"
-            :total-rows="questionCount"
-            per-page="1"
-            hide-goto-end-buttons="0"
-            hide-ellipsis="0"
-            limit="100"
-            prev-text=""
-            next-text=""
-
-        ></b-pagination>
-
-        <b-button @click="nextQuestion" variant="outline-info">Next question</b-button>
-
+         <b-row>
+            <b-col cols="9">
+                <h3>Question: {{currentQuestion}} / {{questionCount}}</h3>
+            </b-col>
+            <b-col cols="3">
+                <b-button @click="nextScreen" variant="outline-info">Next</b-button>
+            </b-col>
+        </b-row>
         <player-screen class="border border-dark" />
+
         <br>
-        <b-button @click="showAnswer" variant="outline-danger">Reveal answer</b-button>
-        <br><br>
+        <br>
+        <br>
+
         <b-row>
             <b-col cols="3">
                 <b-button @click="resetGame" variant="outline-secondary" size="sm">Reset game</b-button>
             </b-col>
-            <b-col cols="9"/>
+            <b-col cols="3">Deprecated: </b-col>
+            <b-col cols="3">
+                <b-button @click="showAnswer" variant="outline-danger" size="sm">Reveal answer</b-button>
+            </b-col>
+            <b-col cols="3">
+                <b-button @click="nextQuestion" variant="outline-info" size="sm">Next question</b-button>
+            </b-col>
         </b-row>
     </div>
 
@@ -34,8 +34,12 @@
 </style>
 <script>
     import axios from 'axios';
-
     import PlayerScreen from './PlayerScreen.vue';
+
+    // TODO value for this variable should be always taken from the backend.
+    //  For now I start with 'revealed', so if admin will refresh page answer
+    //  was not revealed then the reveal will be omitted.
+    let currentState = 'revealed';
 
     export default {
         components: {
@@ -62,12 +66,19 @@
             }
         },
         methods: {
+            nextScreen() {
+                switch(currentState) {
+                    case 'revealed': this.nextQuestion(); break;
+                    case 'not-revealed': this.showAnswer();  break;
+                }
+            },
             nextQuestion() {
                 let self = this;
                 axios.get('/goToNextStep')
                     .then(function (response) {
                         if (response.data) {
-                            self.currentQuestion = response.data;
+                            self.currentQuestion = Math.min(response.data, self.questionCount);
+                            currentState = 'not-revealed';
                         }
                     })
                     .catch(function (error) {
@@ -76,7 +87,7 @@
             },
 
             showAnswer() {
-                axios.get('/showAnswer');
+                axios.get('/showAnswer').then(response => { currentState = 'revealed'; });
             },
             resetGame() {
                 if (window.confirm('Users will be removed. Quiz will be reset. Do you want to do it?')) {

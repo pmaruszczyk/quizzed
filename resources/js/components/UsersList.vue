@@ -12,7 +12,7 @@
                         <th>Nick</th>
                         <th>Points</th>
                     </tr>
-                    <tr v-for="user in users" :class="user.answered ? 'table-success' : ''">
+                    <tr v-for="user in users" :class="user.answered ? 'table-success' : 'table-light'">
                         <td v-b-tooltip.hover :title="user.unique">{{user.nick}}</td>
                         <td>{{user.points}}</td>
                     </tr>

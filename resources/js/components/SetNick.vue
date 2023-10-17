@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container styled">
         <b-row>
             <b-col size="12" class="text-center">
                 <img class="logo" src="img/logo.png" alt="Quizzed">

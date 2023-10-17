@@ -8,7 +8,7 @@
                 <b-button @click="nextScreen" variant="outline-info">Next</b-button>
             </b-col>
         </b-row>
-        <player-screen class="border border-dark" @inform-about-state="setCurrentQuestionState" />
+        <player-screen class="border" @inform-about-state="setCurrentQuestionState" />
 
         <br>
         <br>

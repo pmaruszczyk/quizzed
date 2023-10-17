@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div class="container text-center">
+        <div class="container styled text-center">
             <div class="row">
                 <div class="col-12">
                     <div :class="welcome_class">
                         <h1>{{ welcome_text }}</h1>
+                        <div class="lds-dual-ring"/>
                     </div>
-                    <div class="lds-dual-ring"/>
                 </div>
             </div>
         </div>
@@ -151,10 +151,10 @@
                 stats_class: 'hidden',
                 stats: [],
                 question_id: 0,
-                variantA: 'outline-dark',
-                variantB: 'outline-dark',
-                variantC: 'outline-dark',
-                variantD: 'outline-dark',
+                variantA: 'outline-light',
+                variantB: 'outline-light',
+                variantC: 'outline-light',
+                variantD: 'outline-light',
                 image_src: '',
                 question_active: true,
                 progress_value: 60, //TODO connect with backend?
@@ -228,10 +228,10 @@
                 }
             },
             initAbcdQuestion(question) {
-                this.variantA = 'outline-dark';
-                this.variantB = 'outline-dark';
-                this.variantC = 'outline-dark';
-                this.variantD = 'outline-dark';
+                this.variantA = 'outline-light';
+                this.variantB = 'outline-light';
+                this.variantC = 'outline-light';
+                this.variantD = 'outline-light';
                 this.answer1 = question.answers.A;
                 this.answer2 = question.answers.B;
                 this.answer3 = question.answers.C;

@@ -19,7 +19,7 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
-
+        <link href="/css/style-a.css" rel="stylesheet">
     </head>
     <body class="antialiased">
     <div id="app" >

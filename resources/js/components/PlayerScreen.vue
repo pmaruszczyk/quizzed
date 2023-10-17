@@ -6,6 +6,7 @@
                     <div :class="welcome_class">
                         <h1>{{ welcome_text }}</h1>
                     </div>
+                    <div class="lds-dual-ring"/>
                 </div>
             </div>
         </div>
@@ -125,6 +126,7 @@
     import axios from 'axios';
     let loopId = null;
     export default {
+        emits: ['inform-about-state'],
         mounted() {
             loopId = setInterval(this.getQuestion, 1000);
         },
@@ -182,6 +184,9 @@
                 if (question.revealed) {
                     this.showGainedPoints();
                     clearInterval(this.interval);
+                    this.$emit('inform-about-state', 'revealed');
+                } else {
+                    this.$emit('inform-about-state', 'not-revealed');
                 }
 
                 if (question.id == this.question_id) {

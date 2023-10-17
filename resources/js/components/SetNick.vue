@@ -1,18 +1,19 @@
 <template>
     <div class="container">
         <b-row>
-            <b-col size="12">
-                <h1>Welcome to the Quizzed, write your nick below</h1>
+            <b-col size="12" class="text-center">
+                <img class="logo" src="img/logo.png" alt="Quizzed">
+                <h1>Write your nick below</h1>
             </b-col>
         </b-row>
         <b-row>
-            <b-col size="12">
-                <input type="text" class="form-control text-center" autofocus="autofocus" maxlength="12" id="nickkk" :value="nick" @input="onInput" />
+            <b-col size="12" class="text-center">
+                <input id="nick" type="text" class="text-center" autofocus="autofocus" maxlength="12" :value="nick" @input="onInput" />
             </b-col>
         </b-row>
-        <b-row style="padding-top: 30px;">
+        <b-row class="text-center">
             <b-col size="12" class="text-center">
-                <input type="button" :class="classname" value="Submit" @click="setNick"/>
+                <input type="button" :class="classname" value="Join the quiz" @click="setNick"/>
             </b-col>
         </b-row>
     </div>
@@ -32,7 +33,7 @@
         data() {
             return {
                 nick: '',
-                classname: 'btn btn-primary',
+                classname: 'join',
                 id: ''
             }
         },

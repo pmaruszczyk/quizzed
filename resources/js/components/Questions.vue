@@ -8,7 +8,7 @@
                 <b-button @click="nextScreen" variant="outline-info">Next</b-button>
             </b-col>
         </b-row>
-        <player-screen class="border border-dark" />
+        <player-screen class="border border-dark" @inform-about-state="setCurrentQuestionState" />
 
         <br>
         <br>
@@ -78,7 +78,7 @@
                     .then(function (response) {
                         if (response.data) {
                             self.currentQuestion = Math.min(response.data, self.questionCount);
-                            currentState = 'not-revealed';
+                            // currentState = 'not-revealed';
                         }
                     })
                     .catch(function (error) {
@@ -87,12 +87,15 @@
             },
 
             showAnswer() {
-                axios.get('/showAnswer').then(response => { currentState = 'revealed'; });
+                axios.get('/showAnswer');
             },
             resetGame() {
                 if (window.confirm('Users will be removed. Quiz will be reset. Do you want to do it?')) {
                     axios.post('/resetGame').then(response => location.href = location.href);
                 }
+            },
+            setCurrentQuestionState(state) {
+                currentState = state;
             }
         }
 

@@ -30,12 +30,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 
 
-// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('set-nick', require('./components/SetNick.vue').default);
 Vue.component('users', require('./components/UsersList.vue').default);
-Vue.component('questions', require('./components/Questions.vue').default);
+Vue.component('admin-screen', require('./components/AdminScreen.vue').default);
 Vue.component('player-screen', require('./components/PlayerScreen.vue').default);
-// Vue.component('admin', require('./components/Admin.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

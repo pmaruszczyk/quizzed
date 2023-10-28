@@ -2,7 +2,7 @@
     <div class="container">
         <b-row>
             <b-col size="6">
-                <questions />
+                <admin-screen />
             </b-col>
             <b-col size="6">
             <h3>{{ number_of_players }} players</h3>
@@ -27,7 +27,7 @@
 </style>
 <script>
     import axios from 'axios';
-    import Questions from './Questions.vue';
+    import AdminScreen from './AdminScreen.vue';
 
     function preprocess(user) {
         const split = user.nick.split('_');
@@ -57,7 +57,7 @@
             }
         },
         components: {
-            Questions
+            AdminScreen
         },
         mounted() {
             const self = this;

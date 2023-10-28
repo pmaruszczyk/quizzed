@@ -38,32 +38,16 @@
                 </div>
                 <div class="row" :class="class_answers_abcd">
                     <div class="d-grid gap-1 col-6 mx-auto">
-                        <b-button @click="chooseAbcdAnswer('A')" :variant="variantA">{{ answer1 }}</b-button>
-                        <b-button @click="chooseAbcdAnswer('B')" :variant="variantB">{{ answer2 }}</b-button>
-                        <b-button @click="chooseAbcdAnswer('C')" :variant="variantC">{{ answer3 }}</b-button>
-                        <b-button @click="chooseAbcdAnswer('D')" :variant="variantD">{{ answer4 }}</b-button>
+                        <b-button v-for="(answer, index) in answers" @click="chooseAbcdAnswer(index)" :variant="answer.variant">{{ answer.value }}</b-button>
                     </div>
                 </div>
                 <div class="row">
                     <b-container class="text-right w-50 mt-1"  :class="stats_class">
-                        <b-row>
-                            <b-col class="w-25">{{ answer1 }}</b-col>
-                            <b-col class="w-25"><b-progress :value="stats.A" :max="stats_maximum" :variant="variantA" show-value class="mb-3"></b-progress></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>{{ answer2 }}</b-col>
-                            <b-col><b-progress :value="stats.B" :max="stats_maximum" :variant="variantB" show-value class="mb-3"></b-progress></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>{{ answer3 }}</b-col>
-                            <b-col><b-progress :value="stats.C" :max="stats_maximum" :variant="variantC" show-value class="mb-3"></b-progress></b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>{{ answer4 }}</b-col>
-                            <b-col><b-progress :value="stats.D" :max="stats_maximum" :variant="variantD" show-value class="mb-3"></b-progress></b-col>
+                        <b-row v-for="(value, index) in stats">
+                            <b-col class="w-25">{{ answers[index]['value'] }}</b-col>
+                            <b-col class="w-25"><b-progress :value="value" :max="stats_maximum" :variant="answers[index]['variant']" show-value class="mb-3"></b-progress></b-col>
                         </b-row>
                     </b-container>
-
                 </div>
             </div>
         </div>
@@ -143,18 +127,11 @@
                 points: 0,
                 new_points: '',
                 new_points_temporary_store: '',
-                answer1: '',
-                answer2: '',
-                answer3: '',
-                answer4: '',
+                answers: {},
                 stats_maximum: 0,
                 stats_class: 'hidden',
                 stats: [],
                 question_id: 0,
-                variantA: 'outline-light',
-                variantB: 'outline-light',
-                variantC: 'outline-light',
-                variantD: 'outline-light',
                 image_src: '',
                 question_active: true,
                 progress_value: 60, //TODO connect with backend?
@@ -228,14 +205,16 @@
                 }
             },
             initAbcdQuestion(question) {
-                this.variantA = 'outline-light';
-                this.variantB = 'outline-light';
-                this.variantC = 'outline-light';
-                this.variantD = 'outline-light';
-                this.answer1 = question.answers.A;
-                this.answer2 = question.answers.B;
-                this.answer3 = question.answers.C;
-                this.answer4 = question.answers.D;
+                const self = this;
+                const answers = new Map(Object.entries(question.answers));
+                self.answers = {};
+                answers.forEach((value, index) => {
+                    self.answers[index] = {
+                        value: value,
+                        variant: 'outline-light',
+                    };
+                });
+                this.stats = [];
                 this.class_answers_abcd = '';
             },
             initPointQuestion(question) {
@@ -246,40 +225,23 @@
             },
             populateAbcdQuestion(question) {
                 if (question.correct) {
-                    switch (question.correct) {
-                        case 'A':
-                            this.markAbcdAsValid(this, 'variantA');
-                            this.markAbcdAsInvalid(this, 'variantB');
-                            this.markAbcdAsInvalid(this, 'variantC');
-                            this.markAbcdAsInvalid(this, 'variantD');
-                            break;
-                        case 'B':
-                            this.markAbcdAsValid(this, 'variantB');
-                            this.markAbcdAsInvalid(this, 'variantA');
-                            this.markAbcdAsInvalid(this, 'variantC');
-                            this.markAbcdAsInvalid(this, 'variantD');
-                            break;
-                        case 'C':
-                            this.markAbcdAsValid(this, 'variantC');
-                            this.markAbcdAsInvalid(this, 'variantA');
-                            this.markAbcdAsInvalid(this, 'variantB');
-                            this.markAbcdAsInvalid(this, 'variantD');
-                            break;
-                        case 'D':
-                            this.markAbcdAsValid(this, 'variantD');
-                            this.markAbcdAsInvalid(this, 'variantA');
-                            this.markAbcdAsInvalid(this, 'variantB');
-                            this.markAbcdAsInvalid(this, 'variantC');
-                            break;
+                    const self = this;
+                    const answers = new Map(Object.entries(question.answers));
+                    answers.forEach((value, index) => {
+                        if (!self.answers[index]) {
+                            return;
+                        }
+                        self.answers[index]['variant'] = self.getAbcdInvalidVariant(self.answers[index]['variant']);
+                    });
+
+                    if (this.answers[question.correct]) {
+                        this.answers[question.correct]['variant'] = this.getAbcdValidVariant();
                     }
                 }
             },
             populatePointQuestion(question, playersPoints) {
                 const imageLoaded = document.querySelector('.image img').width > 0;
                 if (question.correct_width && imageLoaded) {
-                    // const image = document.querySelector('.image img');
-                    // const left = parseInt((question.correct_width * image.width)/question.image_width);
-                    // const top = parseInt((question.correct_height * image.height)/question.image_height);
                     const left = this.convertToImageWidth(question.correct_width, question);
                     const top = this.convertToImageHeight(question.correct_height, question);
 
@@ -298,7 +260,13 @@
 
                 this.stats_class = '';
                 this.stats = stats;
-                this.stats_maximum = Math.max(stats.A, stats.B, stats.C, stats.D);
+                const statsMap = new Map(Object.entries(stats));
+                let values = [];
+                statsMap.forEach((value, index) => {
+                    values.push(value);
+                });
+
+                this.stats_maximum = Math.max(...values);
             },
             getQuestion(question) {
                 let self = this;
@@ -321,8 +289,9 @@
                 this.waiting_for_answer = false;
 
                 if (this.question_active) {
-                    this['variant' + letter] = 'warning';
+                    this.answers[letter]['variant'] = 'warning';
                 }
+
                 const answer = {
                     type: 'abcd',
                     letter: letter,
@@ -402,14 +371,14 @@
                 const marks = document.querySelectorAll('.image .mark-other-player:not(.hidden)');
                 marks.forEach(mark => mark.remove());
             },
-            markAbcdAsValid(obj, property) {
-                obj[property] = 'success';
+            getAbcdValidVariant() {
+                return 'success';
             },
-            markAbcdAsInvalid(obj, property) {
-                if (obj[property] === 'warning' || obj[property] === 'danger') {
-                    obj[property] = 'danger';
+            getAbcdInvalidVariant(currentVariant) {
+                if (currentVariant === 'warning' || currentVariant === 'danger') {
+                    return 'danger';
                 } else {
-                    obj[property] = '';
+                    return '';
                 }
             },
             showGainedPoints() {

@@ -160,7 +160,7 @@ class Question extends Controller
                 if ($question['type'] === 'point'){
                     $playersPoints = $this->getCurrentQuestionChosenPoints($nick);
                 } else {
-                    $stats = $this->getCurrentQuestionStats();
+                    $stats = $this->getCurrentQuestionStats($question['answers']);
                 }
             }
         } else {
@@ -218,19 +218,17 @@ class Question extends Controller
         return $points;
     }
 
-    private function getCurrentQuestionStats()
+    private function getCurrentQuestionStats(array $questionAnswers)
     {
-        $stats = [
-            'A' => 0,
-            'B' => 0,
-            'C' => 0,
-            'D' => 0,
-        ];
+        $stats = [];
+        foreach ($questionAnswers as $index => $answer) {
+            $stats[$index] = 0;
+        }
 
         $statsPre = DB::select("
             SELECT answer, COUNT(*) AS answer_count
             FROM answers
-            WHERE question = (SELECT value FROM state WHERE id='STEP')
+            WHERE question = (SELECT value FROM state WHERE id = 'STEP')
             GROUP BY answer
         ");
 

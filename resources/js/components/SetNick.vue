@@ -26,8 +26,6 @@
     }
 </style>
 <script>
-
-
     import axios from 'axios';
     export default {
         data() {
@@ -50,11 +48,8 @@
                     nick: this.nick
                 })
                 .then(function (response) {
-                    if (response.data.nickFromServer) {
-
-                        location.href = 'user'; ///' + encodeURIComponent(response.data.nickFromServer);
-                        // self.nick = response.data.nickFromServer ;
-                        // self.id = response.data.id;
+                    if (response.data) {
+                        location.href = 'user';
                         self.classname = 'hidden';
                     }
                 })

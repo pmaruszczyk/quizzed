@@ -18,11 +18,7 @@ class Question extends Controller
         $questions = array_merge([[]], $questions);
 
         if ($index !== null) {
-            if (isset($questions[$index])) {
-                return $questions[$index];
-            } else {
-                return [];
-            }
+            return $questions[$index] ?? [];
         }
 
         return $questions;

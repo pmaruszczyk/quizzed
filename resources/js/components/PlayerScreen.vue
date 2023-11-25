@@ -19,7 +19,7 @@
                     <!-- TODO {{ points }} points,--> last gained: {{ new_points }}
                 </b-col>
             </b-row>
-            <div class="container text-center">
+            <div :class="['container text-center', question_state]">
                 <b-row>
                     <b-col size="12">
                         <b-progress :value="progress_value" :max="progress_max" class="mb-3"></b-progress>
@@ -28,6 +28,13 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="question-title"><h1>{{ title }}</h1></div>
+                        <div class="countdown">
+                            <div class="number"><h2>5</h2></div>
+                            <div class="number"><h2>4</h2></div>
+                            <div class="number"><h2>3</h2></div>
+                            <div class="number"><h2>2</h2></div>
+                            <div class="number"><h2>1</h2></div>
+                        </div>
                         <div class="image">
                             <img :class="class_image" :src="image_src" @click="pointOnImage" />
                             <div class="mark mark-user hidden"></div>
@@ -36,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" :class="class_answers_abcd">
+                <div :class="['row', 'answers', class_answers_abcd]">
                     <div class="d-grid gap-1 col-6 mx-auto">
                         <b-button v-for="(answer, index) in answers" @click="chooseAbcdAnswer(index)" :variant="answer.variant">{{ answer.value }}</b-button>
                     </div>
@@ -64,6 +71,14 @@
     button {
         width: 100%;
     }
+    .question_only .image,
+    .question_only .answers {
+        display: none;
+    }
+    .full_question .countdown {
+        display: none;
+    }
+
     .image {
         position: relative;
         display: inline-block;
@@ -105,6 +120,56 @@
         text-align: left;
         height: 27px;
     }
+
+    /* Count down animation */
+    .countdown {
+        width: 200px;
+        height: 200px;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        margin: 0 auto;
+    }
+    .countdown .number {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;;
+        align-items: center;
+        transform: rotateY(270deg);
+        animation: animate 10s linear;
+    }
+    .countdown .number:nth-child(1) {
+        animation-delay: 0s;
+    }
+    .countdown .number:nth-child(2) {
+        animation-delay: 1s;
+    }
+    .countdown .number:nth-child(3) {
+        animation-delay: 2s;
+    }
+    .countdown .number:nth-child(4) {
+        animation-delay: 3s;
+    }
+    .countdown .number:nth-child(5) {
+        animation-delay: 4s;
+    }
+    .countdown .number h2 {
+        margin: 0;
+        padding: 0;
+        font-size: 10em;
+        color: #fff;
+    }
+    @keyframes animate {
+        0% {
+            transform: rotateY(90deg);
+        }
+        10%, 100% {
+            transform: rotateY(-90deg);
+        }
+    }
 </style>
 <script>
     import axios from 'axios';
@@ -132,6 +197,7 @@
                 stats_class: 'hidden',
                 stats: [],
                 question_id: 0,
+                question_state: 'question_only', // or 'full_question'
                 image_src: '',
                 question_active: true,
                 progress_value: 60, //TODO connect with backend?
@@ -141,15 +207,10 @@
         methods: {
             populateQuestion(question, playersPoints) {
                 if (question.id == '-1') { //TODO  magic value - not descriptive
-                    clearInterval(loopId); //TODO function called -> stop asking server
-                    clearInterval(this.interval);//TODO function called ->  stop progressbar
-                    this.welcome_class = '';
-                    this.question_class = 'hidden';
-                    this.welcome_text= 'It was the last question.';
-                    return;
+                    this.showEndingScreen();
                 }
 
-                if (question.id == 0) {
+                if (question.id == 0 || question.id == '-1') {
                     return;
                 }
 
@@ -158,9 +219,10 @@
                     case 'point': this.populatePointQuestion(question, playersPoints); break;
                 }
 
+                //TODO move if/else below elsewhere?
                 if (question.revealed) {
                     this.showGainedPoints();
-                    clearInterval(this.interval);
+                    this.stopProgressBarAnimation();
                     this.$emit('inform-about-state', 'revealed');
                 } else {
                     this.$emit('inform-about-state', 'not-revealed');
@@ -169,40 +231,8 @@
                 if (question.id == this.question_id) {
                     return;
                 }
-                clearInterval(this.interval);
 
-                // TODO -> Abstract ^ \/
-                this.progress_max = question.time_per_question;
-                let i = question.time_per_question;
-                let self = this;
-                this.interval = setInterval(function () {
-                    i--;
-                    if (i >= 0) {
-                        self.progress_value = i;
-                    } else {
-                        clearInterval(self.interval);
-                    }
-                }, 1000);
-
-
-                //TODO \/ this.initQuestion; General function
-                this.question_active = true;
-                this.welcome_class = 'hidden';
-                this.question_class = question.type;
-                this.waiting_for_answer = true;
-                this.type = question.type;
-                this.title = question.question;
-                this.image_src = '/img/' + question.image;
-                this.new_points = '';
-                this.new_points_temporary_store = '';
-                this.question_id = question.id;
-                this.nick = question.nick;
-                this.clearPointQuestionElements();
-
-                switch (question.type) {
-                    case 'abcd': this.initAbcdQuestion(question); break;
-                    case 'point': this.initPointQuestion(question); break;
-                }
+                this.initQuestion(question);
             },
             initAbcdQuestion(question) {
                 const self = this;
@@ -268,7 +298,7 @@
 
                 this.stats_maximum = Math.max(...values);
             },
-            getQuestion(question) {
+            getQuestion() {
                 let self = this;
                 axios.get('/question', {})
                     .then(function (response) {
@@ -392,6 +422,65 @@
                 const image = document.querySelector('.image img');
                 return (y * image.height) / question.image_height;
             },
+            stopProgressBarAnimation() {
+                clearInterval(this.progress_bar_interval_id);
+            },
+            startProgressBarAnimation(time_per_question) {
+                this.stopProgressBarAnimation();
+                let time_left = time_per_question;
+                const self = this;
+
+                this.progress_max = time_per_question;
+                this.progress_bar_interval_id = setInterval(() => {
+                    time_left--;
+                    if (time_left >= 0) {
+                        self.progress_value = time_left;
+                    } else {
+                        this.stopProgressBarAnimation();
+                    }
+                }, 1000);
+            },
+            preloadImage(url) {
+                this.preloaded = new Image();
+                this.preloaded.src = url;
+            },
+            initQuestion(question) {
+                this.question_state = 'question_only';
+                this.question_active = true;
+                this.welcome_class = 'hidden';
+                this.question_class = question.type;
+                this.waiting_for_answer = true;
+                this.type = question.type;
+                this.title = question.question;
+                this.image_src = '/img/' + question.image;
+                this.new_points = '';
+                this.new_points_temporary_store = '';
+                this.question_id = question.id;
+                this.nick = question.nick;
+                this.time_for_question = question.time_per_question;
+
+                switch (question.type) {
+                    case 'abcd': this.initAbcdQuestion(question); break;
+                    case 'point': this.initPointQuestion(question); break;
+                }
+
+                this.preloadImage(this.image_src);
+                this.clearPointQuestionElements();
+
+                const timeForPreloading = 5 * 1e3; //todo pass it with question from backend
+                setTimeout(()=> {this.startQuestion()}, timeForPreloading);
+            },
+            startQuestion() {
+                this.question_state = 'full_question';
+                this.startProgressBarAnimation(this.time_for_question);
+            },
+            showEndingScreen() {
+                clearInterval(loopId); //TODO function call -> stop asking server
+                this.stopProgressBarAnimation();
+                this.welcome_class = '';
+                this.question_class = 'hidden';
+                this.welcome_text = 'It was the last question.';
+            }
         }
     }
 </script>

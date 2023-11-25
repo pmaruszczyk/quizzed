@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Question extends Controller
 {
     private const TIME_PER_QUESTION = 60;
+    private const TIME_FOR_PRELOAD = 60;
     private const POINTS_CORRECT = 200;
 
     public function list(?int $index = null) : array
@@ -148,7 +149,7 @@ class Question extends Controller
         $points = 0;
         $answer = '';
 
-        $gameIsInProgress = ($startTime + self::TIME_PER_QUESTION) > $now;
+        $gameIsInProgress = ($startTime + (self::TIME_PER_QUESTION + self::TIME_FOR_PRELOAD)) > $now;
 
         switch ($type) {
             case 'abcd':
@@ -184,7 +185,7 @@ class Question extends Controller
 
         if ($points > 0) {
             // Add bonus for quick answer
-            $points += 2 * ($startTime + self::TIME_PER_QUESTION - $now);
+            $points += 2 * ($startTime + (self::TIME_PER_QUESTION + self::TIME_FOR_PRELOAD) - $now);
         }
 
         $index = $this->getCurrentQuestionIndex();

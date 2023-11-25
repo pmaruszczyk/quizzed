@@ -13,106 +13,7 @@ class Question extends Controller
 
     public function list(?int $index = null) : array
     {
-        //TODO Move to config file
-        $questions = [
-            [
-                'type' => 'abcd',
-                'question' => 'Choose the fruit',
-                'image' => 'fruit1.webp',
-                'answers' => [
-                    'A' => 'apple',
-                    'B' => 'broccoli',
-                    'C' => 'cabbage',
-                    'D' => 'dinosaur',
-                ],
-                'correct' => 'A',
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Choose the biggest cross',
-                'image' => 'cross1.png',
-                'image_width' => 600,
-                'image_height' => 400,
-                'correct_width' => 469,
-                'correct_height' => 176,
-                'correct_radius' => 85,
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Click the yellow heart',
-                'image' => 'heart1.png',
-                'image_width' => 650,
-                'image_height' => 400,
-                'correct_width' => 579,
-                'correct_height' => 343,
-                'correct_radius' => 40,
-            ],
-            [
-                'type' => 'abcd',
-                'question' => 'ABCD question',
-                'image' => 'fruit1.webp',
-                'answers' => [
-                    'A' => 'Bad',
-                    'B' => 'Bad',
-                    'C' => '-> Correct',
-                    'D' => 'Bad',
-                ],
-                'correct' => 'C',
-            ],
-            [
-                'type' => 'abcd',
-                'question' => 'ABCD question too',
-                'image' => 'fruit2.webp',
-                'answers' => [
-                    'A' => 'Bad',
-                    'B' => 'Bad',
-                    'C' => 'Bad',
-                    'D' => '-> Correct',
-                ],
-                'correct' => 'D',
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Click the brown dot in the circle',
-                'image' => 'file.webp',
-                'image_width' => 1196,
-                'image_height' => 700,
-                'correct_width' => 257,
-                'correct_height' => 144,
-                'correct_radius' => 150,
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Click the yellow heart',
-                'image' => 'heart1.png',
-                'image_width' => 650,
-                'image_height' => 400,
-                'correct_width' => 579,
-                'correct_height' => 343,
-                'correct_radius' => 40,
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Find the sun, not the flower',
-                'image' => 'file.webp',
-                'image_width' => 1196,
-                'image_height' => 700,
-                'correct_width' => 706,
-                'correct_height' => 288,
-                'correct_radius' => 100,
-            ],
-            [
-                'type' => 'point',
-                'question' => 'Click the top of this fruit mountain',
-                'image' => 'fruit1.webp',
-                'image_width' => 200,
-                'image_height' => 200,
-                'correct_width' => 112,
-                'correct_height' => 38,
-                'correct_radius' => 30,
-            ],
-        ];
-
+        $questions = config('questions');
         $questions = array_merge([[]], $questions);
 
         if ($index !== null) {
@@ -124,7 +25,6 @@ class Question extends Controller
         }
 
         return $questions;
-
     }
 
     private function getCurrentFull(?Request $request) : array

@@ -101,7 +101,7 @@ class Question extends Controller
             SELECT answer
             FROM answers
             WHERE question = (SELECT value FROM state WHERE id = 'STEP')
-            AND nick != '?'
+            AND nick != ?
         ", [$nick]);
 
         //TODO ^ removing own result not working

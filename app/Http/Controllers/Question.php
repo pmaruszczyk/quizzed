@@ -55,9 +55,7 @@ class Question extends Controller
                 $question['revealed'] = true;
 
                 if ($question['type'] === 'point'){
-                    if ($nick) {
-                        $playersPoints = $this->getCurrentQuestionChosenPoints($nick);
-                    }
+                    $playersPoints = $this->getCurrentQuestionChosenPoints($nick);
                 } else {
                     $stats = $this->getCurrentQuestionStats($question['answers']);
                 }

@@ -48,7 +48,7 @@ class Question extends Controller
         $question['revealed'] = false;
         $stats = [];
         $playersPoints = [];
-        $nick = $request->session()->get('nick');
+        $nick = $request->session()->get('nick', '');
 
         if ($this->isAnswerRevealed()) {
             if (isset($question['type'])) {

@@ -5,6 +5,7 @@ return [
         'type' => 'abcd',
         'question' => 'Next week group of young people is going to meet in Zawiercie. In which hotel?',
         'image' => 'mb5.jpg',
+        'filters' => ['flashlight'],
         'answers' => [
             'D' => 'D',
         ],

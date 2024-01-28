@@ -40,6 +40,11 @@
                             <div class="mark mark-user hidden"></div>
                             <div class="mark mark-correct hidden"></div>
                             <div class="mark mark-other-player hidden"></div>
+                            <div class="filters" @click="pointOnImage">
+                                <div class="filter filter-flashlight hidden" @mousemove="filterFlashlightMove" >
+                                    <div class="filter-flashlight-light" ></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,6 +124,30 @@
         margin: 0;
         text-align: left;
         height: 27px;
+    }
+
+    .filters{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+    .filter.filter-flashlight {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+    .filter.filter-flashlight .filter-flashlight-light {
+        position: absolute;
+        height: 20000px;
+        width: 20000px;
+        top: 0;
+        left: 0;
+        box-shadow: inset 0 0 58px 9955px #000;
+        /* for w/h 2k/2k -> inset 0px 0px 49px 973px #000; */
+        background: none;
     }
 
     /* Count down animation */
@@ -221,6 +250,7 @@
 
                 //TODO move if/else below elsewhere?
                 if (question.revealed) {
+                    this.destroyFilters();
                     this.showGainedPoints();
                     this.stopProgressBarAnimation();
                     this.$emit('inform-about-state', 'revealed');
@@ -338,12 +368,14 @@
                 }
                 this.waiting_for_answer = false;
 
-                const imageWidth = event.target.width;
-                const imageHeight = event.target.height;
+                const target = document.querySelector('.image img');
+
+                const imageWidth = target.width;
+                const imageHeight = target.height;
 
                 const positionLeftInImage = event.clientX;
                 const positionTopInImage = event.clientY;
-                const rect = event.target.getBoundingClientRect();
+                const rect = target.getBoundingClientRect();
 
                 const positionXOfClick = positionLeftInImage - rect.left;
                 const positionYOfClick = positionTopInImage - rect.top;
@@ -459,6 +491,9 @@
                 this.nick = question.nick;
                 this.time_for_question = question.time_per_question;
 
+                this.destroyFilters();
+                this.buildFilters(question.filters || []);
+
                 switch (question.type) {
                     case 'abcd': this.initAbcdQuestion(question); break;
                     case 'point': this.initPointQuestion(question); break;
@@ -480,6 +515,31 @@
                 this.welcome_class = '';
                 this.question_class = 'hidden';
                 this.welcome_text = 'It was the last question.';
+            },
+            buildFilters(filters) {
+                filters.forEach(filter => {
+                    const filterElement = document.querySelector(`.filter-${filter}:nth-child(1)`);
+                    filterElement.classList.remove('hidden');
+                });
+            },
+            destroyFilters() {
+                const filters = document.querySelectorAll('.filter');
+                filters.forEach(filter => filter.classList.add('hidden'));
+            },
+            filterFlashlightMove(event) {
+                const filter = document.querySelector('.filter-flashlight');
+                const filterLight = document.querySelector('.filter-flashlight-light');
+                const filterLightWidth = filterLight.offsetWidth;
+                const filterLightHeight = filterLight.offsetHeight;
+                const filterLeft = filter.getBoundingClientRect().left;
+                const filterTop = filter.getBoundingClientRect().top;
+                const filterLightHalfWidth = filterLightWidth / 2;
+                const filterLightHalfHeight = filterLightHeight / 2;
+
+                const filterLightLeftInFilter = event.clientX - filterLeft - filterLightHalfWidth;
+                const filterLightTopInFilter = event.clientY - filterTop - filterLightHalfHeight;
+                filterLight.style.left = `${filterLightLeftInFilter}px`;
+                filterLight.style.top = `${filterLightTopInFilter}px`;
             }
         }
     }
